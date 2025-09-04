@@ -10,8 +10,8 @@ while True:
     try:
         ##### Input handling
         print("Please note that this program is designed to be run on a monospaced terminal with ligature support and width greater than 35")
-        lowest_number = int(input("Lowest integer in table axis: "))
-        highest_number = int(input("Highest integer in table axis: "))
+        lowest_number = int(input("Lowest integer in table axis (e.g. 1): "))
+        highest_number = int(input("Highest integer in table axis (e.g. 9): "))
 
         while lowest_number >= highest_number + 1:
             print("Lowest value must be lower than highest. Please try again.")
@@ -36,7 +36,7 @@ while True:
         for row in range(lowest_number, highest_number + 1):
             row_buffer = f"0{row} │"
             for column in range(lowest_number, row + 1): # current row number = number of things to calculate for row
-                if row*column <= 9: # monospaced table formatting for always 2-digit numbers
+                if row*column <= 9: # append single-digit numbers with 0 to keep table formatting
                     row_buffer = row_buffer + f" 0{row*column}"
                 else:
                     row_buffer = row_buffer + f" {row*column}"
