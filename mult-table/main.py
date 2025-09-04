@@ -9,17 +9,25 @@ Notes:
 while True:
     try:
         ##### Input handling
-        print("Please note that this program is designed to be run on a monospaced terminal with ligament support and width greater than 35")
+        print("Please note that this program is designed to be run on a monospaced terminal with ligature support and width greater than 35")
         lowest_number = int(input("Lowest integer in table axis: "))
+        highest_number = int(input("Highest integer in table axis: "))
+
+        while lowest_number >= highest_number + 1:
+            print("Lowest value must be lower than highest. Please try again.")
+            lowest_number = int(input("Lowest integer in table axis: "))
+            highest_number = int(input("Highest integer in table axis: "))
+
+
         while lowest_number >= 10:
             print("Due to formatting issues, numbers greater than 9 are currently unsupported.")
             lowest_number = int(input("Lowest integer in table axis: ")) # ensure result is always 2 digits
 
-        highest_number = int(input("Highest integer in table axis: "))
         while highest_number >= 10:
             print("Due to formatting issues, numbers greater than 9 are currently unsupported.")
             highest_number = int(input("Highest integer in table axis: ")) # ensure result is always 2 digits again
         
+
 
         ##### Result Computation and Printing
         print("\nResults Table:")
@@ -37,7 +45,7 @@ while True:
             row = row + 1
         
         # footer
-        table_horizontal_line = "───┼─" + (row+1)*"───"
+        table_horizontal_line = "───┼─" + (highest_number - lowest_number + 1)*"───"
         print(table_horizontal_line)
         x_axis_label = "   │"
         for i in range(lowest_number, highest_number + 1):
