@@ -9,15 +9,12 @@ tasks = []
 def get_due_date():
     """Get the due date for the task from the user"""
     while True:
-        print("Please type in the date, month and year the task is due.")
+        print("Please type in the date the task is due, in the format DD/MM/YY.")
         try:
-            due_day = int(input("Due Day: "))
-            due_month = int(input("Due Month: "))
-            due_year = int(input("Due Year: "))
-            due_date = datetime.datetime(due_year, due_month, due_day)
+            due_date = datetime.datetime.strptime(input("> "), "%d/%m/%y").date()
             break
         except ValueError:
-            print("Date must be valid integer between 1 and 31.")
+            print("Date must be valid and in format DD/MM/YY")
     return due_date
 
 def return_due_date(task):
