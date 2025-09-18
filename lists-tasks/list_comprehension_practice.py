@@ -98,6 +98,6 @@ for i in range(3, limit+1):
     else:
         sieve.append(i)
 primes = [number for number in numbers if number in sieve]"""
-# an incomprehensible list comprehension for the previous, optimised™
+# an incomprehensible list comprehension for the previous, optimised™ to save 1 microsecond at runtime by spending 2 hours writing it
 primes = [number for number in numbers if number in [n for n in range(2, max(numbers)+1) if all(n % d for d in range(2, int(n**0.5)+1))]]
 print(primes)
