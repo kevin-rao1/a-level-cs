@@ -19,6 +19,14 @@ class Rectangle:
     def get_diagonal(self):
         return (self._width**2 + self._height**2)**(1/2)
 
+def rectangle_unit_test():
+    rectangle_test = Rectangle(3, 4)
+    assert rectangle_test.get_area() == 12
+    assert rectangle_test.get_perimeter() == 14
+    assert rectangle_test.get_diagonal() == 5
+    return 0
+
+rectangle_unit_test()
 rectangle0 = Rectangle(5, 6)
 print(f"rectangle0 has area {rectangle0.get_area()}, perimeter {rectangle0.get_perimeter()}, and diagonal {rectangle0.get_diagonal()}")
 # could add more code to create new rectangles easily.
