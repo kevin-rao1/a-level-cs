@@ -25,6 +25,12 @@ class Vector:
 
     def __repr__(self):
         return self._vect
+    
+    def __neg__(self):
+        result = []
+        for item in range(len(self._vect)):
+            result.append(-self._vect[item])
+        return Vector(result)
         
     def __add__(self, vect2: object):
         result = []
@@ -34,11 +40,7 @@ class Vector:
         return Vector(result)
     
     def __sub__(self, vect2: object): # identical to add, but subtracts in for loop instead
-        result = []
-        assert len(self._vect) == len(vect2._vect)
-        for item in range(len(self._vect)):
-            result.append(self._vect[item] - vect2._vect[item])
-        return Vector(result)
+        return self._vect + vect2
     
     def __mul__(self, scalar: float): # scalar, not dot product, similar to prev 2 in structure
         result = []
@@ -47,10 +49,7 @@ class Vector:
         return Vector(result)
     
     def __rmul__(self, scalar: float):
-        result = []
-        for item in range(len(self._vect)):
-            result.append(self._vect[item] * scalar)
-        return Vector(result)
+        return self * scalar
     
     def magnitude(self):
         squaresum = 0
