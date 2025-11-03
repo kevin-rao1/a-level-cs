@@ -1,1 +1,1 @@
-Repo for all A-Level work. Each project is in its each directory, for now.
+Repo for all A-Level work. Each unit is in its each directory.
