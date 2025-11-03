@@ -17,10 +17,11 @@ class LinkedList:
 
     def pop(self):
         data = self._head_node.get_data()
-        if self.size >= 2:
+        if self._size >= 1:
             self._head_node = self._head_node.get_next()
         else:
-            self.is_empty()
+            self._size = 0
+            self._head_node = None
         return data
 
     def peek(self):
@@ -31,23 +32,23 @@ class LinkedList:
     
     def __str__(self):
         """ Defines what should be displayed when the user prints a linked list object. """
+        buffer = ""
         while self._size >= 1:
-            buffer = ""
             buffer = buffer + ", " + str(self._data)
         return buffer
     
 class Node:
-    def __init__(data, next_node):
+    def __init__(self, data, next_node):
         self._data = data
         self._next_node = next_node
     
-    def set_next(next_node):
+    def set_next(self, next_node):
         self._next_node = next_node
 
-    def get_data():
+    def get_data(self):
         return self._data
     
-    def get_next():
+    def get_next(self):
         return self._next_node
 
 if __name__ == "__main__":
