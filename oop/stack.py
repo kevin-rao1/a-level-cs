@@ -1,4 +1,18 @@
-class LinkedList:
+class Node:
+    def __init__(self, data, next_node):
+        self._data = data
+        self._next_node = next_node
+    
+    def set_next(self, next_node):
+        self._next_node = next_node
+
+    def get_data(self):
+        return self._data
+    
+    def get_next(self):
+        return self._next_node
+
+class Stack:
     """
     A stack using a singly linked list to create a stack.
     """
@@ -14,45 +28,36 @@ class LinkedList:
         new_node = Node(data, None)
         new_node.set_next(self._head_node)
         self._head_node = new_node
+        self._size += 1
 
     def pop(self):
+        if self._size == 0:
+            return None # Stack empty
         data = self._head_node.get_data()
-        if self._size >= 1:
-            self._head_node = self._head_node.get_next()
-        else:
-            self._size = 0
-            self._head_node = None
+        self._head_node = self._head_node.get_next()
+        self._size -= 1
         return data
 
     def peek(self):
-        return self._head_node.get_data()
+        if self.is_empty() == False:
+            return self._head_node.get_data() 
+        else:
+            raise None # stack empty
     
     def is_empty(self):
         return self._size == 0
-    
+
     def __str__(self):
         """ Defines what should be displayed when the user prints a linked list object. """
         buffer = ""
-        while self._size >= 1:
-            buffer = buffer + ", " + str(self._data)
+        current_node = self._head_node
+        while current_node != None:
+            buffer = buffer + str(current_node.get_data())
+            current_node = current_node.get_next()
         return buffer
-    
-class Node:
-    def __init__(self, data, next_node):
-        self._data = data
-        self._next_node = next_node
-    
-    def set_next(self, next_node):
-        self._next_node = next_node
-
-    def get_data(self):
-        return self._data
-    
-    def get_next(self):
-        return self._next_node
 
 if __name__ == "__main__":
-    my_stack = LinkedList()
+    my_stack = Stack()
 
     my_stack.push(1)
     my_stack.push(2)
