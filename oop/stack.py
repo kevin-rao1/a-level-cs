@@ -52,7 +52,7 @@ class Stack:
         buffer = ""
         current_node = self._head_node
         while current_node != None:
-            buffer = buffer + str(current_node.get_data())
+            buffer += str(current_node.get_data())
             current_node = current_node.get_next()
         return buffer
 
