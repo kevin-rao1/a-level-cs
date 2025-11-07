@@ -58,7 +58,7 @@ class Disk(StockedItem):
             self._on_loan == False
         return 0
 
-if __name__ == "__main__":
+def test_library():
     trauma = Book("Things Fall Apart", "Chinua Achebe", "9780435272463")
     trauma.loan()
     print(trauma)
@@ -66,3 +66,6 @@ if __name__ == "__main__":
     nugget = Disk("Scarlet Fire", "Otis Macdonald", "9008")
     print(trauma)
     print(nugget)
+
+if __name__ == "__main__":
+    test_library()
