@@ -16,7 +16,7 @@ for letter in word2:
             count2[i] = count2[i] + 1
 possible_to_form_word = True
 for i in range(25):
-    if count1[i] >= count2[i]:
+    if count1[i] > count2[i]:
         possible_to_form_word = False
 
 if possible_to_form_word == True:
