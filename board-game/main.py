@@ -28,7 +28,7 @@ height = 3
 current_player = "X" # options are X, O
 winner = "Nobody" # options are Nobody, Tie, X, O
 move = 1
-number_to_win = 5
+number_to_win = 3
 board = [" " for i in range(width*height)] # " " for empty, "O" for nought, "X" for cross
 selected_location = ((width*height)//2)-(width//2) # defaults close to middle of board
 
@@ -38,6 +38,7 @@ def draw_board():
     os.system('cls' if os.name == 'nt' else 'clear')
     print(f"Turn for {current_player}\nMove {move}")
 
+    # AI Generated code starts here based on a broken implementation I did earlier.
     # 2. Calculate the X (col) and Y (row) of the selection
     sel_col = selected_location % width
     sel_row = selected_location // width
@@ -110,17 +111,59 @@ def draw_board():
             bottom_str += corner + "───"
     bottom_str += "┘"
     print(bottom_str)
+    # AI Generated code ends here
+
+def coord_transform(x:int, y:int):
+    """maps a coordinate, (x,y) to a single index number"""
+    return y*width+x
 
 def check_for_win_state():
+    global winner # scope issue, had to use AI to debug this one. 
     if move == (width*height)+1: # board full
-        global winner 
-        winner = "Tie" # scope issue, had to use AI to debug this one. 
+        winner = "Tie" 
     
-    for col in range(width):
+    for row in range(height): # check horizontal
         Xcount = 0
         Ocount = 0
-        for i in range(height):
-            print(i)
+        for item in range(width):
+            cell = board[(row*width)+item]
+            if cell == "X": # how do I simplify this?
+                Xcount += 1
+                Ocount = 0
+            if cell == "O":
+                Ocount += 1
+                Xcount = 0
+            if cell == " ":
+                Xcount = 0
+                Ocount = 0
+            if Xcount >= number_to_win:
+                winner = "X"
+                return 
+            if Ocount >= number_to_win:
+                winner = "O"
+                return
+    
+    for column in range(width): # check vertical
+        Ocount = 0
+        Xcount = 0
+        for row in range(height):
+            cell = board[row*width+column]
+            if cell == "X":
+                Xcount += 1
+                Ocount = 0
+            if cell == "O":
+                Ocount += 1
+                Xcount = 0
+            if cell == " ":
+                Xcount = 0
+                Ocount = 0
+            if Xcount >= number_to_win:
+                winner = "X"
+                return 
+            if Ocount >= number_to_win:
+                winner = "O"
+                return
+        
 draw_board()
 
 # Main loop
