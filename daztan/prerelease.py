@@ -7,6 +7,7 @@ import random
 
 class Dastan:
     def __init__(self, R, C, NoOfPieces):
+        """init function which sets number of pieces, board size, and initialises variables and calls other methods. """
         self._Board = []
         self._Players = []
         self._MoveOptionOffer = []
@@ -22,6 +23,7 @@ class Dastan:
         self._CurrentPlayer = self._Players[0]
 
     def __DisplayBoard(self):
+        """draws the board in the terminal"""
         print("\n" + "   ", end="")
         for Column in range(1, self._NoOfColumns + 1):
             print(str(Column) + "  ", end="")
@@ -47,6 +49,7 @@ class Dastan:
         print()
 
     def __DisplayState(self):
+        """Displays other info below the board each turn"""
         self.__DisplayBoard()
         print("Move option offer: " + self._MoveOptionOffer[self._MoveOptionOfferPosition])
         print()
@@ -55,11 +58,13 @@ class Dastan:
         print()
 
     def __GetIndexOfSquare(self, SquareReference):
+        """Converts from a coordinate (e.g. 56) to the actual array index of the board."""
         Row = SquareReference // 10
         Col = SquareReference % 10
         return (Row - 1) * self._NoOfColumns + (Col - 1)
 
     def __CheckSquareInBounds(self, SquareReference):
+        """Checks if the coordinate is inside the board"""
         Row = SquareReference // 10
         Col = SquareReference % 10
         if Row < 1 or Row > self._NoOfRows:
@@ -70,6 +75,7 @@ class Dastan:
             return True
 
     def __CheckSquareIsValid(self, SquareReference, StartSquare):
+        """Checks if square is a valid move. """
         if not self.__CheckSquareInBounds(SquareReference):
             return False
         PieceInSquare = self._Board[self.__GetIndexOfSquare(SquareReference)].GetPieceInSquare()
@@ -90,6 +96,7 @@ class Dastan:
                 return True
 
     def __CheckIfGameOver(self):
+        """Check if the game is over"""
         Player1HasMirza = False
         Player2HasMirza = False
         for S in self._Board:
@@ -104,30 +111,36 @@ class Dastan:
         return not (Player1HasMirza and Player2HasMirza)
 
     def __GetSquareReference(self, Description):
+        """asks the user for the square"""
         SelectedSquare = int(input("Enter the square " + Description + " (row number followed by column number): "))
         return SelectedSquare
 
     def __UseMoveOptionOffer(self):
+        """Asks the user to choose the new move option"""
         ReplaceChoice = int(input("Choose the move option from your queue to replace (1 to 5): "))
         self._CurrentPlayer.UpdateMoveOptionQueueWithOffer(ReplaceChoice - 1, self.__CreateMoveOption(self._MoveOptionOffer[self._MoveOptionOfferPosition], self._CurrentPlayer.GetDirection()))
         self._CurrentPlayer.ChangeScore(-(10 - (ReplaceChoice * 2)))
         self._MoveOptionOfferPosition = random.randint(0, 4)
 
     def __GetPointsForOccupancyByPlayer(self, CurrentPlayer):
+        """Calculates the score change after the player occupies a place. """
         ScoreAdjustment = 0
         for S in self._Board:
             ScoreAdjustment += (S.GetPointsForOccupancy(CurrentPlayer))
         return ScoreAdjustment
 
     def __UpdatePlayerScore(self, PointsForPieceCapture):
+        """updates the player score by adding everything that changes the score. """
         self._CurrentPlayer.ChangeScore(self.__GetPointsForOccupancyByPlayer(self._CurrentPlayer) + PointsForPieceCapture)
 
     def __CalculatePieceCapturePoints(self, FinishSquareReference):
+        """Calculates how many points the piece gives. """
         if self._Board[self.__GetIndexOfSquare(FinishSquareReference)].GetPieceInSquare() is not None:
             return self._Board[self.__GetIndexOfSquare(FinishSquareReference)].GetPieceInSquare().GetPointsIfCaptured()
         return 0
 
     def PlayGame(self):
+        """the main game loop"""
         GameOver = False
         while not GameOver:
             self.__DisplayState()
@@ -162,9 +175,11 @@ class Dastan:
         self.__DisplayFinalResult()
 
     def __UpdateBoard(self, StartSquareReference, FinishSquareReference):
+        """updates board after a move"""
         self._Board[self.__GetIndexOfSquare(FinishSquareReference)].SetPiece(self._Board[self.__GetIndexOfSquare(StartSquareReference)].RemovePiece())
 
     def __DisplayFinalResult(self):
+        """displays win screen"""
         if self._Players[0].GetScore() == self._Players[1].GetScore():
             print("Draw!")
         elif self._Players[0].GetScore() > self._Players[1].GetScore():
@@ -173,6 +188,7 @@ class Dastan:
             print(self._Players[1].GetName() + " is the winner!")
 
     def __CreateBoard(self):
+        """initialises board"""
         for Row in range(1, self._NoOfRows + 1):
             for Column in range(1, self._NoOfColumns + 1):
                 if Row == 1 and Column == self._NoOfColumns // 2:
@@ -184,6 +200,7 @@ class Dastan:
                 self._Board.append(S)
 
     def __CreatePieces(self, NoOfPieces):
+        """initialises pieces"""
         for Count in range(1, NoOfPieces + 1):
             CurrentPiece = Piece("piece", self._Players[0], 1, "!")
             self._Board[self.__GetIndexOfSquare(2 * 10 + Count + 1)].SetPiece(CurrentPiece)
@@ -196,6 +213,7 @@ class Dastan:
         self._Board[self.__GetIndexOfSquare(self._NoOfRows * 10 + (self._NoOfColumns // 2 + 1))].SetPiece(CurrentPiece)
 
     def __CreateMoveOptionOffer(self):
+        """creates the move queue."""
         self._MoveOptionOffer.append("jazair")
         self._MoveOptionOffer.append("chowkidar")
         self._MoveOptionOffer.append("cuirassier")
@@ -273,6 +291,7 @@ class Dastan:
         return NewMoveOption
 
     def __CreateMoveOption(self, Name, Direction):
+        """wrapper method that creates a new move option in the move queue."""
         if Name == "chowkidar":
             return self.__CreateChowkidarMoveOption(Direction)
         elif Name == "ryott":
@@ -285,6 +304,7 @@ class Dastan:
             return self.__CreateCuirassierMoveOption(Direction)
 
     def __CreateMoveOptions(self):
+        """a very confusingly named variable that adds each move to the queue."""
         self._Players[0].AddToMoveOptionQueue(self.__CreateMoveOption("ryott", 1))
         self._Players[0].AddToMoveOptionQueue(self.__CreateMoveOption("chowkidar", 1))
         self._Players[0].AddToMoveOptionQueue(self.__CreateMoveOption("cuirassier", 1))
@@ -325,6 +345,7 @@ class Square:
         self._PieceInSquare = P
 
     def RemovePiece(self):
+        """removes piece from board"""
         PieceToReturn = self._PieceInSquare
         self._PieceInSquare = None
         return PieceToReturn
@@ -354,6 +375,7 @@ class Kotla(Square):
         self._Symbol = S
 
     def GetPointsForOccupancy(self, CurrentPlayer):
+        """Return the points the current player gets for occupying the square."""
         if self._PieceInSquare is None:
             return 0
         elif self._BelongsTo.SameAs(CurrentPlayer):
@@ -379,6 +401,7 @@ class MoveOption:
         return self._Name
 
     def CheckIfThereIsAMoveToSquare(self, StartSquareReference, FinishSquareReference):
+        """checks if a valid move to the target square from the starting square exists."""
         StartRow = StartSquareReference // 10
         StartColumn = StartSquareReference % 10
         FinishRow = FinishSquareReference // 10
@@ -400,10 +423,12 @@ class Move:
         return self._ColumnChange
 
 class MoveOptionQueue:
+    """implements a queue datatype"""
     def __init__(self):
         self.__Queue = []
 
     def GetQueueAsString(self):
+        """Converts a queue to a string which is needed for some reason"""
         QueueAsString = ""
         Count = 1
         for M in self.__Queue:
@@ -433,6 +458,7 @@ class Player:
         self.__Queue = MoveOptionQueue()
 
     def SameAs(self, APlayer):
+        """checks if the player is the same one as the input player"""
         if APlayer is None:
             return False
         elif APlayer.GetName() == self.__Name:
@@ -441,6 +467,7 @@ class Player:
             return False
 
     def GetPlayerStateAsString(self):
+        """An extremely cursed way to return a string representation of the player state"""
         return self.__Name + "\n" + "Score: " + str(self.__Score) + "\n" + "Move option queue: " + self.__Queue.GetQueueAsString() + "\n"
 
     def AddToMoveOptionQueue(self, NewMoveOption):
@@ -465,6 +492,7 @@ class Player:
         self.__Score += Amount
 
     def CheckPlayerMove(self, Pos, StartSquareReference, FinishSquareReference):
+        """checks if the player move is valid"""
         Temp = self.__Queue.GetMoveOptionInPosition(Pos - 1)
         return Temp.CheckIfThereIsAMoveToSquare(StartSquareReference, FinishSquareReference)
 
