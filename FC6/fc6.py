@@ -2,6 +2,8 @@
 In this repo so I can use the venv.
 FC6, or Flight Computational Cd-based Control Configuration-space Calculator, is a simulation framework created by C6 Aerospace specifically for the S-IX vehicle. 
 It uses an iterative binary search of apogees predicted with an RK4-based integrator at varying drag coefficients to find the most optimal one. Very optimised for low/slow conditions. 
+Then, the resultant Cd is passed to a slew rate limiter and a centering proportional controller with the gain tied to dynamic pressure.
+Designed for very subsonic (<150m/s) speeds, tropospheric altitudes, linear airbrakes and assumes rocket always points prograde. 
 """
 import math
 import statistics
@@ -51,8 +53,17 @@ class Sim:
                 search_range[0] = mid_val
         return mid_val
     
+    def find_derivatives(self, vel, pos, mass, cd, area):
+        """returns [vel, accel], a list of lists."""
+        density = self.find_density(max(0,pos[1]))
+        speed = math.sqrt(vel[0]**2 + vel[1]**2)
+        k = 0.5*density*area*cd # k=1/2*Rho*A*Cd, so kv^2 = F
+        drag_x = -k * speed * vel[0]
+        drag_y = -k * speed * vel[1]
+        accel = [drag_x/mass, (drag_y/mass) - self.g]
+        return list(vel), accel
+    
     def predict_ap(self, deployment):
-        # euler instead of RK4 for now
         #copy data to avoid state pollution
         internal_vel = list(self.rocket.velocity) # lists are mutable.
         internal_pos = list(self.rocket.position)
@@ -60,26 +71,31 @@ class Sim:
         internal_cd = self.rocket.base_cd + deployment*self.rocket.servo_cd_max
         internal_area = self.rocket.area
         max_time = 15
+        dt = self.deltaT
         
         # simulates up to 15 seconds of flight, but breaks early on apogee. 
         # Assumes rocket always points prograde, so weathercocking is completely unaccounted for. 
         for t in range(int(max_time//self.deltaT)): 
-            density = self.find_density(internal_pos[1])
-            speed = math.sqrt(internal_vel[0]**2 + internal_vel[1]**2)
-            internal_accel = [0,0]
+            #rk4 things
+            k1_v, k1_a = self.find_derivatives(internal_vel, internal_pos, internal_mass, internal_cd, internal_area)
 
-            # find force
-            k = 0.5*density*internal_area*internal_cd # k=1/2*Rho*A*Cd, so kv^2 = Fd
-            force = [-k*speed*internal_vel[0], -k*speed*internal_vel[1] - self.g*internal_mass] # use some vector maths to find the force vector [x,y]
+            pos_k2 = [internal_pos[i] + k1_v[i] * 0.5 * dt for i in range(2)]
+            vel_k2 = [internal_vel[i] + k1_a[i] * 0.5 * dt for i in range(2)]
+            k2_v, k2_a = self.find_derivatives(vel_k2, pos_k2, internal_mass, internal_cd, internal_area)
 
-            # update acceleration, velocity and position vectors
-            internal_accel[0] = force[0]/internal_mass # F=ma
-            internal_accel[1] = force[1]/internal_mass
-            internal_pos[0] += internal_vel[0]*self.deltaT # s=u+vt
-            internal_pos[1] += internal_vel[1]*self.deltaT
-            internal_vel[0] += internal_accel[0]*self.deltaT # v=u+at
-            internal_vel[1] += internal_accel[1]*self.deltaT
+            pos_k3 = [internal_pos[i] + k2_v[i] * 0.5 * dt for i in range(2)]
+            vel_k3 = [internal_vel[i] + k2_a[i] * 0.5 * dt for i in range(2)]
+            k3_v, k3_a = self.find_derivatives(vel_k3, pos_k3, internal_mass, internal_cd, internal_area)
 
+            pos_k4 = [internal_pos[i] + k3_v[i] * dt for i in range(2)]
+            vel_k4 = [internal_vel[i] + k3_a[i] * dt for i in range(2)]
+            k4_v, k4_a = self.find_derivatives(vel_k4, pos_k4, internal_mass, internal_cd, internal_area)
+
+            for i in range(2):
+                internal_pos[i] += (dt / 6.0) * (k1_v[i] + 2*k2_v[i] + 2*k3_v[i] + k4_v[i])
+                internal_vel[i] += (dt / 6.0) * (k1_a[i] + 2*k2_a[i] + 2*k3_a[i] + k4_a[i])
+
+            # apogee detection
             if internal_vel[1] <= 0:
                 return internal_pos[1]
         raise ApogeeNotFoundException
