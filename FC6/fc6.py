@@ -12,13 +12,15 @@ class ApogeeNotFoundException(Exception):
     pass
 
 class Sim:
-    def __init__(self, temp:float, pressure:float, humidity:float, deltaT:float, target_ap:float, rocket:"Rocket"):
+    def __init__(self, temp:float, pressure:float, humidity:float, wind:tuple, deltaT:float, target_ap:float, oscilation_penalty:float, rocket:"Rocket"):
         self.groundtemp = temp # degrees Kelvin
         self.groundpressure = pressure # Pascals, at ground.
         self.humidity = humidity # relative humidity
         self.deltaT = deltaT # timestep, s
         self.target_ap = target_ap # target apogee, m
         self.g = 9.80665
+        self.wind = wind
+        self.oscilation_penalty = oscilation_penalty # to account for AoA, need to tune, suggested 1.05
         self.rocket = rocket
         self.density = self.find_density(self.rocket.position[1])
     
@@ -56,10 +58,12 @@ class Sim:
     def find_derivatives(self, vel, pos, mass, cd, area):
         """returns [vel, accel], a list of lists."""
         density = self.find_density(max(0,pos[1]))
-        speed = math.sqrt(vel[0]**2 + vel[1]**2)
-        k = 0.5*density*area*cd # k=1/2*Rho*A*Cd, so kv^2 = F
-        drag_x = -k * speed * vel[0]
-        drag_y = -k * speed * vel[1]
+        rvel_x = vel[0] - self.wind[0]
+        rvel_y = vel[1] - self.wind[1]
+        airspeed = math.sqrt(rvel_x**2 + rvel_y**2)
+        k = 0.5*density*area*cd*self.oscilation_penalty # k=1/2*Rho*A*Cd, so kv^2 = F
+        drag_x = -k * airspeed * rvel_x
+        drag_y = -k * airspeed * rvel_y
         accel = [drag_x/mass, (drag_y/mass) - self.g]
         return list(vel), accel
     
@@ -74,7 +78,7 @@ class Sim:
         dt = self.deltaT
         
         # simulates up to 15 seconds of flight, but breaks early on apogee. 
-        # Assumes rocket always points prograde, so weathercocking is completely unaccounted for. 
+        # Assumes rocket always points prograde, so weathercocking is probably overaccounted for. 
         for t in range(int(max_time//self.deltaT)): 
             #rk4 things
             k1_v, k1_a = self.find_derivatives(internal_vel, internal_pos, internal_mass, internal_cd, internal_area)
