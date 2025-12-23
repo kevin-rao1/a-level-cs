@@ -68,11 +68,11 @@ class Sim:
         for i in range(max_iterations):
             mid_val = statistics.mean(search_range)
             error = self.predict_ap(mid_val) - self.target_ap
-            if abs(error) <= 0.01: # within 1cm
+            if abs(error) <= 0.1: # within 10cm
                 return mid_val
-            if error <-0.01: # undershoot
+            if error <-0.1: # undershoot
                 search_range[1] = mid_val
-            if error >0.01: #overshoot
+            if error >0.1: #overshoot
                 search_range[0] = mid_val
         return mid_val
     
