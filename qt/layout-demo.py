@@ -41,7 +41,6 @@ class MainWindow(qtw.QMainWindow):
         layout.addWidget(self.ok, 3, 1, 1, 1)
         layout.addWidget(self.cancel, 3, 2, 1, 1)
 
-
         # display
         widget = qtw.QWidget()
         widget.setLayout(layout)

@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, \
-    QPushButton, QVBoxLayout, QLineEdit, QColorDialog, QMessageBox, QFileDialog, QTextEdit, QHBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QVBoxLayout, QLineEdit, QColorDialog, QMessageBox, \
+    QFileDialog, QTextEdit, QHBoxLayout
 import PyQt6.QtCore as qtc 
 
 class MainWindow(QMainWindow):
@@ -13,26 +13,34 @@ class MainWindow(QMainWindow):
         bottomrow = QHBoxLayout()
 
         self.main_text = QTextEdit()
-        text = self.main_text.toPlainText()
-        text = self.main_text.setPlainText(text)
+        text = self.main_text.toMarkdown()
+        text = self.main_text.setMarkdown(text)
         layout.addWidget(self.main_text)
 
         # Create another button
-        quit_btn = QPushButton("Quit")
-        quit_btn.clicked.connect(self.quit)
-        bottomrow.addWidget(quit_btn)
+        #quit_btn = QPushButton("Quit")
+        #quit_btn.clicked.connect(self.quit)
+        #bottomrow.addWidget(quit_btn)
 
         # Create another button
-        open_btn = QPushButton("Open")
-        open_btn.clicked.connect(self.open_btn_click)
-        bottomrow.addWidget(open_btn)
+        #open_btn = QPushButton("Open")
+        #open_btn.clicked.connect(self.open_btn_click)
+        #bottomrow.addWidget(open_btn)
 
         # Create another button
-        save_btn = QPushButton("Save")
-        save_btn.clicked.connect(self.save_btn_click)
-        bottomrow.addWidget(save_btn)
+        #save_btn = QPushButton("Save")
+        #save_btn.clicked.connect(self.save_btn_click)
+        #bottomrow.addWidget(save_btn)
 
         layout.addLayout(bottomrow)
+
+        # menu
+        menubar = self.menuBar()
+        file_menu = menubar.addMenu("&File")
+        file_menu.addAction("&Open", self.open_btn_click)
+        file_menu.addAction("&Save", self.save_btn_click)
+        file_menu.addSeparator()
+        file_menu.addAction("\0&Quit", self.quit)
 
         # Create the windows central widget
         widget = QWidget()
@@ -47,7 +55,7 @@ class MainWindow(QMainWindow):
                 self.main_text.setMarkdown(file_contents)
 
     def save_btn_click(self):
-        save_text = self.main_text.toMarkdown()
+        save_text = self.main_text.toPlainText()
         filename, _ = QFileDialog.getSaveFileName(self, "Save File", ".", "Text Files (*.md)")
         if filename:
             with open(filename, "w") as file:
