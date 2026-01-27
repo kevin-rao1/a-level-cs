@@ -8,4 +8,5 @@ def convert_decimal_to_binary(decimal:int):
         decimal = dec_new
     return binary
 
-print(convert_decimal_to_binary(9008))
+if __name__ == "__main__":
+    print(convert_decimal_to_binary(9008))
