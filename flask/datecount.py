@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 from flask import render_template
+from flask import redirect
 import datetime as dt
 
 def calc_next_birthday(dob):
@@ -26,22 +27,34 @@ def calc_next_birthday(dob):
 app = Flask(__name__)
 
 @app.route('/')
-def get_name():
+def get_birthday():
     return render_template('birthday_submit_form.html')
 
 @app.route('/birthday', methods=["POST"])
 def birthday():
-    year = request.form.get('year', '')
-    month = request.form.get('month', '')
-    day = request.form.get('day', '')
-    if year and month and day:
+    dob_input = request.form.get('date', '')
+    if dob_input:
         try:
-            dob = dt.date(int(year), int(month), int(day))
+            dob = dt.date.fromisoformat(dob_input)
         except ValueError:
             return 'invalid data'
         return calc_next_birthday(dob)
     else:
         return 'no args detected'
+
+@app.route ('/comments', methods=["GET", "POST"])
+def show_comments():
+    if request.method == "POST":
+        comment_input = request.form.get('new_comment', '')
+        username = request.form.get('username', '')
+        if comment_input and username:
+            with open("flask/comments.txt", "a") as file:
+                file.write(f"{username}: {comment_input}\n")
+        return redirect('/comments')
+    comments = []
+    with open("flask/comments.txt", "r") as file:
+        comments = file.readlines()
+    return render_template('comment_box.html', comments=comments)
 
 
 

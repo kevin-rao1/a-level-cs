@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comments</title>
+</head>
+<body>
+  <form action = "/comments" method = "post">
+    <p>Add a comment</p>
+    <p><input type="text" id="new_comment" name="new_comment" value="Add a new comment..."></p>
+    <p><input type="text" id="username" name="username" value="User"></p>
+    <p><input type = "submit" value = "Submit" /></p>
+ </form>
+ <p>Comments:</p>
+ <ul>
+    {% for comment in comments %}
+        <li>
+            {{comment}}
+        </li>
+    {% endfor %}
+ </ul>
+</body>
+</html>
