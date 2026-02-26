@@ -2,7 +2,6 @@ def convert_denary_to_base(denary:float, base:int):
     digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWZYZ"
     denary_int = int(denary)
     decimal = denary-denary_int # might have floating point errors?
-    print(denary_int, decimal)
 
     #process integer with repeated division
     output_int = ""
@@ -22,7 +21,8 @@ def convert_denary_to_base(denary:float, base:int):
         decimal -= int(decimal)
 
     output = output_int+"."+output_dec
-    return "0x"+output if base==16 else "0b"+output if base ==2 else output
+    return "0x"+output if base==16 else "0b"+output if base==2 else output
 
 if __name__ == "__main__":
     print(convert_denary_to_base(1478.5626220703125, 16))
+    print(convert_denary_to_base(3647.2564, 2))
