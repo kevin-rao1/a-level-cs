@@ -11,7 +11,7 @@ def mc_kernel(rng_states, samples_per_thread, out):
     subtotal = np.float32(0.0)
     c = np.float32(0.0)
     for _ in range(samples_per_thread):
-        x = xoroshiro128p_uniform_float32(rng_states, thread_id) # thanks nvidia for throttling float64 on geforce
+        x = xoroshiro128p_uniform_float32(rng_states, thread_id) # thanks novideo for throttling float64 on geforce
         # thanks gemini
         y = math.sqrt(one - x * x) - c # optimisation™
         t = subtotal + y
